@@ -16,6 +16,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     e.preventDefault();
     window.ipcRenderer.send("query-docs", {
       question: input,
+      // image_path: "C:/Users/KIIT/Pictures/wallpapers/1123635.jpg"
     });
 
     if (input.trim() || selectedImage) {
@@ -42,7 +43,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <form className="border-t border-gray-800 p-4">
+    <form className="p-4">
       <div className="relative">
         {/* Hidden file input */}
         <input
@@ -77,10 +78,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
           <button
             type="button"
             onClick={triggerFileInput}
-            className="mr-2 p-2 rounded-lg hover:bg-gray-700 transition-colors"
+            className="mr-2 p-2 rounded-lg hover:bg-zinc-800 transition-colors"
             title="Upload Image"
           >
-            <ImagePlus size={20} className="text-gray-300" />
+            <ImagePlus size={30} className="text-gray-300" />
           </button>
 
           <input
@@ -90,12 +91,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
             placeholder={
               selectedImage ? "Add a caption..." : "Type your message..."
             }
-            className="flex-1 bg-gray-800 border border-gray-700 rounded-lg p-4 pr-12 text-gray-300 focus:outline-none focus:border-emerald-600"
+            className="flex-1 bg-zinc-800 rounded-lg p-4 pr-12 text-gray-300 focus:outline-none focus:border-violet-700"
           />
 
           <button
             type="submit"
-            className="absolute right-3 top-1/2 -translate-y-1/2 bg-emerald-600 p-2 rounded-lg hover:bg-emerald-700 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-violet-700 p-2 rounded-lg hover:bg-emerald-700 transition-colors"
             disabled={!input.trim() && !selectedImage}
             onClick={handleSubmit}
           >

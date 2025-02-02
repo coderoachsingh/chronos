@@ -11,14 +11,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4`}>
       <div
-        className={`max-w-[70%] rounded-lg p-4 ${
+        className={`max-w-[70%] rounded-lg px-4 py-2 ${
           isUser
-            ? "bg-emerald-600 text-white rounded-br-none"
-            : "bg-gray-800 text-gray-200 rounded-bl-none"
+            ? "bg-violet-700 text-white rounded-br-none"
+            : "bg-zinc-800 text-gray-200 rounded-bl-none"
         }`}
       >
         <p>{message.content}</p>
-        <span className="text-xs opacity-70 mt-1 block">
+        <span className="text-xs opacity-70 block">
           {message.timestamp.toLocaleTimeString()}
         </span>
       </div>

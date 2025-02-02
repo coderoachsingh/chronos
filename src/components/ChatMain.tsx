@@ -58,7 +58,7 @@ const ChatMain: React.FC = () => {
           <div className="flex flex-col items-center justify-center h-full p-8">
             <h1 className="text-4xl font-bold mb-2 flex items-center">
               Welcome to{" "}
-              <span className="bg-emerald-600 text-white px-3 py-1 ml-2">
+              <span className="bg-violet-700 text-white px-3 py-1 ml-2">
                 RAG-NAROK
               </span>
             </h1>
@@ -74,8 +74,8 @@ const ChatMain: React.FC = () => {
                 { icon: Zap, title: "Multimodel input" },
               ].map(({ icon: Icon, title }) => (
                 <div key={title} className="text-center">
-                  <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <Icon size={24} className="text-emerald-600" />
+                  <div className="w-12 h-12 bg-violet-700 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <Icon size={24} className="text-white" />
                   </div>
                   <h3 className="font-medium mb-2">{title}</h3>
                   <p className="text-sm text-gray-500">
@@ -95,7 +95,7 @@ const ChatMain: React.FC = () => {
           </div>
         )}
       </div>
-      <div className="border-t border-gray-800">
+      <div>
         <FileUpload onFileSelect={handleFileSelect} />
         <ChatInput
           messages={messages}

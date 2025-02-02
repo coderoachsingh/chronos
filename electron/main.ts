@@ -179,7 +179,7 @@ app.whenReady().then(createWindow);
 ////
 //// Handle IPC messages from renderer ////
 ipcMain.on("query-docs", (event, query) => {
-  fetch("http://10.5.145.46:5000/query", {
+  fetch("http://localhost:5000/query", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(query),
