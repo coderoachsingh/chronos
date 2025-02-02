@@ -2,8 +2,11 @@ import { app, BrowserWindow, screen, ipcMain } from "electron";
 import { fileURLToPath } from "node:url";
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import path from "node:path";
+import fetch from "node-fetch";
 
 let pythonProcess: ChildProcessWithoutNullStreams | null = null;
+pythonProcess = spawn("python", ["python_backend/engine.py"]);
+
 import * as fs from "fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -56,48 +59,53 @@ const saveSize = (width: number, height: number): void => {
 };
 
 //
-function createPythonProcess() {
-  // Spawn Python process
-  pythonProcess = spawn("python", ["./python_backend/engine.py"], {
-    stdio: ["pipe", "pipe", "pipe"],
-  });
+// function createPythonProcess() {
+//   // Spawn Python process
+//   pythonProcess = spawn("python", ["python_backend/engine.py"]);
 
-  // Handle data coming from Python
-  pythonProcess.stdout.on("data", (data) => {
-    let dataBuffer = "";
-    // Convert Buffer to string and add to buffer
-    dataBuffer += data.toString();
+//   // Handle data coming from Python
+//   pythonProcess.stdout.on("data", (data) => {
+//     let dataBuffer = "";
+//     // Convert Buffer to string and add to buffer
+//     dataBuffer += data.toString();
+//     console.log(dataBuffer);
 
-    // Process complete messages
-    let newlineIndex;
-    while ((newlineIndex = dataBuffer.indexOf("\n")) !== -1) {
-      const message = dataBuffer.slice(0, newlineIndex);
-      dataBuffer = dataBuffer.slice(newlineIndex + 1);
+// Process complete messages
+// let newlineIndex;
+// while ((newlineIndex = dataBuffer.indexOf("\n")) !== -1) {
+//   const message = dataBuffer.slice(0, newlineIndex);
+//   dataBuffer = dataBuffer.slice(newlineIndex + 1);
 
-      try {
-        const parsedData = JSON.parse(message);
-        win?.webContents.send("python-message", parsedData);
-      } catch (e) {
-        console.error("Failed to parse Python output:", message);
-      }
-    }
-  });
+//   try {
+//     const parsedData = JSON.parse(message);
+//     console.log("\nFIRST CHECK\n");
+//     win?.webContents.send("python-message", parsedData);
+//     console.log("\nSECOND CHECK\n");
 
-  // Handle Python errors
-  pythonProcess.stderr.on("data", (data) => {
-    console.error(`Python Error: ${data}`);
-    win?.webContents.send("python-error", data.toString());
-  });
+//   } catch {
+//     console.log("\nERROR CHECK\n");
 
-  // Handle Python process exit
-  pythonProcess.on("close", (code) => {
-    console.log(`Python process exited with code ${code}`);
-    if (code !== 0) {
-      // Restart Python process if it crashes
-      createPythonProcess();
-    }
-  });
-}
+//     console.error("Failed to parse Python output:", message);
+//   }
+// }
+// });
+
+// Handle Python errors
+// pythonProcess.stderr.on("data", (data) => {
+//   console.log(data);
+//   console.error(`\n\n\nPython Error: ${data}`);
+//   win?.webContents.send("python-error", data.toString());
+// });
+
+// // Handle Python process exit
+// pythonProcess.on("close", (code) => {
+//   console.log(`Python process exited with code ${code}`);
+//   if (code !== 0) {
+//     // Restart Python process if it crashes
+//     // createPythonProcess();
+//   }
+// });
+// }
 //
 const createWindow = () => {
   const savedSize = getSavedSize();
@@ -110,7 +118,6 @@ const createWindow = () => {
     width: width,
     height: height,
     autoHideMenuBar: true,
-    icon: "public/icon/Round App Logo.png",
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs"),
       sandbox: true,
@@ -126,11 +133,11 @@ const createWindow = () => {
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL);
-    createPythonProcess();
+    // createPythonProcess();
   } else {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
-    createPythonProcess();
+    // createPythonProcess();
   }
 
   // Save the window size when it is resized.
@@ -168,19 +175,29 @@ app.on("before-quit", () => {
 
 app.whenReady().then(createWindow);
 
-///
 ////
-// Handle IPC messages from renderer
-ipcMain.handle("query-docs", async (_, query) => {
-  console.log("Querying docs:", query);
-  return new Promise((resolve, reject) => {
-    try {
-      // Send query to Python process
-      const message = JSON.stringify(query) + "\n";
-      pythonProcess?.stdin.write(message);
-      resolve({ status: "sent" });
-    } catch (error) {
-      reject(error);
-    }
-  });
+////
+//// Handle IPC messages from renderer ////
+ipcMain.on("query-docs", (event, query) => {
+  fetch("http://10.5.145.46:5000/query", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(query),
+  })
+    .then((response) => response.json())
+    .then((data) => event.reply("query-docs-reply", data.answer))
+    .catch((error) => console.error(error));
+});
+
+//
+ipcMain.on("load-document", async (_, filePath) => {
+  fetch("http://localhost:5000/load_document", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ file_path: filePath }),
+  })
+    .then((response) => response.json())
+    .catch((error) => console.error(error));
 });

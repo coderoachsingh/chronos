@@ -13,8 +13,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     window.ipcRenderer.send("query-docs", {
-      text: "Hello, who are you ?",
-      timestamp: Date.now(),
+      question: input,
     });
 
     if (input.trim() || selectedImage) {
@@ -95,7 +94,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
           <button
             type="submit"
             className="absolute right-3 top-1/2 -translate-y-1/2 bg-emerald-600 p-2 rounded-lg hover:bg-emerald-700 transition-colors"
-            // disabled={!input.trim() && !selectedImage}
+            disabled={!input.trim() && !selectedImage}
             onClick={handleSubmit}
           >
             <ArrowUpCircle size={20} className="text-white" />

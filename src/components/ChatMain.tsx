@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Diamond, Check, Zap } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import FileUpload from './FileUpload';
+import FileUpload from "./FileUpload";
 import { Message } from "../types";
 import { v4 as uuidv4 } from "uuid";
 
@@ -15,7 +15,7 @@ const ChatMain: React.FC = () => {
     const newMessage: Message = {
       id: uuidv4(),
       content,
-      sender: 'user',
+      sender: "user",
       timestamp: new Date(),
     };
 
@@ -26,25 +26,26 @@ const ChatMain: React.FC = () => {
     setTimeout(() => {
       const botResponse: Message = {
         id: uuidv4(),
-        content: activeFile 
+        content: activeFile
           ? `I'll help you analyze ${activeFile.name}. What would you like to know about it?`
           : "I'm an AI assistant. How can I help you?",
-        sender: 'bot',
+        sender: "bot",
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, botResponse]);
+      setMessages((prev) => [...prev, botResponse]);
     }, 1000);
   };
 
   const handleFileSelect = (file: File) => {
     setActiveFile(file);
+    window.ipcRenderer.send("load-document", file.path);
     if (messages.length === 0) {
       setShowWelcome(false);
       // Add system message about file upload
       const systemMessage: Message = {
         id: uuidv4(),
         content: `Uploaded ${file.name}. What would you like to know about this document?`,
-        sender: 'bot',
+        sender: "bot",
         timestamp: new Date(),
       };
       setMessages([systemMessage]);
@@ -57,9 +58,14 @@ const ChatMain: React.FC = () => {
         {showWelcome ? (
           <div className="flex flex-col items-center justify-center h-full p-8">
             <h1 className="text-4xl font-bold mb-2 flex items-center">
-              Welcome to <span className="bg-emerald-600 text-white px-3 py-1 ml-2">RAG-NAROK</span>
+              Welcome to{" "}
+              <span className="bg-emerald-600 text-white px-3 py-1 ml-2">
+                RAG-NAROK
+              </span>
             </h1>
-            <p className="text-gray-500 mb-12">The power of AI for your documents - Tame the knowledge!</p>
+            <p className="text-gray-500 mb-12">
+              The power of AI for your documents - Tame the knowledge!
+            </p>
 
             {/* Features */}
             <div className="flex space-x-8 mt-8">
@@ -73,7 +79,11 @@ const ChatMain: React.FC = () => {
                     <Icon size={24} className="text-emerald-600" />
                   </div>
                   <h3 className="font-medium mb-2">{title}</h3>
-                  <p className="text-sm text-gray-500">Pariatur sint laborum cillum<br />aute consectetur irure.</p>
+                  <p className="text-sm text-gray-500">
+                    Pariatur sint laborum cillum
+                    <br />
+                    aute consectetur irure.
+                  </p>
                 </div>
               ))}
             </div>
