@@ -1,0 +1,36 @@
+%pip install --upgrade  langchain langchain-google-genai "langchain[docarray]" faiss-cpu pypdf
+import os
+import requests
+from PIL import Image
+     
+
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from IPython.display import display, Markdown
+     
+
+from langchain_google_genai import ChatGoogleGenerativeAI
+     
+
+from langchain_core.messages import HumanMessage, SystemMessage
+     
+
+from langchain.vectorstores import DocArrayInMemorySearch
+from google.colab import userdata
+GOOGLE_API_KEY=userdata.get('GOOGLE_API_KEY')
+os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+def get_image(url,filename,extension):
+  content = requests.get(url).content
+  with open(f'/content/{filename}.{extension}', 'wb') as f:
+    f.write(content)
+  image = Image.open(f"/content/{filename}.{extension}")
+  image.show()
+  return image
+
+image = get_image("https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/1705ca64-fbc8-4b79-a451-4ab77760c219/dunk-low-older-shoes-C7T1cx.png",
+                  "nike-shoes",
+                  "png")
+
+
