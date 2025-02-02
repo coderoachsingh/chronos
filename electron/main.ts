@@ -185,7 +185,10 @@ ipcMain.on("query-docs", (event, query) => {
     body: JSON.stringify(query),
   })
     .then((response) => response.json())
-    .then((data) => event.reply("query-docs-reply", data.answer))
+    .then((data) => {
+      console.log(data.answer);
+      event.reply("query-docs-reply", data.answer)
+    })
     .catch((error) => console.error(error));
 });
 

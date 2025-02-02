@@ -5,7 +5,9 @@ interface ChatInputProps {
   onSendMessage: (message: string, image?: File) => void;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
+const ChatInput: React.FC<ChatInputProps> = ({
+  onSendMessage,
+}) => {
   const [input, setInput] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);

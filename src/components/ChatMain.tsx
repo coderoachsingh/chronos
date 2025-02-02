@@ -21,19 +21,6 @@ const ChatMain: React.FC = () => {
 
     setMessages([...messages, newMessage]);
     setShowWelcome(false);
-
-    // Simulate bot response
-    setTimeout(() => {
-      const botResponse: Message = {
-        id: uuidv4(),
-        content: activeFile
-          ? `I'll help you analyze ${activeFile.name}. What would you like to know about it?`
-          : "I'm an AI assistant. How can I help you?",
-        sender: "bot",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botResponse]);
-    }, 1000);
   };
 
   const handleFileSelect = (file: File) => {
@@ -51,6 +38,18 @@ const ChatMain: React.FC = () => {
       setMessages([systemMessage]);
     }
   };
+
+  window.ipcRenderer.on("query-docs-reply", (_, ans) => {
+    setMessages([
+      ...messages,
+      {
+        id: uuidv4(),
+        content: ans,
+        sender: "bot",
+        timestamp: new Date(),
+      },
+    ]);
+  });
 
   return (
     <div className="flex-1 flex flex-col h-full">
@@ -98,7 +97,11 @@ const ChatMain: React.FC = () => {
       </div>
       <div className="border-t border-gray-800">
         <FileUpload onFileSelect={handleFileSelect} />
-        <ChatInput onSendMessage={handleSendMessage} />
+        <ChatInput
+          messages={messages}
+          setMessages={setMessages}
+          onSendMessage={handleSendMessage}
+        />
       </div>
     </div>
   );
